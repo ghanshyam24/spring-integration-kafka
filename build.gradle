@@ -25,23 +25,27 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+	runtimeOnly 'io.asyncer:r2dbc-mysql'
+
 	implementation 'org.springframework.boot:spring-boot-starter-integration'
 	implementation 'org.springframework.boot:spring-boot-starter-kafka'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.integration:spring-integration-kafka'
-	implementation 'org.springframework.integration:spring-integration-mongodb'
 	implementation 'org.springframework.integration:spring-integration-webflux'
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive-test'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-kafka-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webflux-test'
 	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 	testImplementation 'org.springframework.integration:spring-integration-test'
 	testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
 	testImplementation 'org.testcontainers:testcontainers-kafka'
-	testImplementation 'org.testcontainers:testcontainers-mongodb'
+
+	// Add the version after the colon
+	testImplementation 'org.testcontainers:mysql:1.19.8'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
