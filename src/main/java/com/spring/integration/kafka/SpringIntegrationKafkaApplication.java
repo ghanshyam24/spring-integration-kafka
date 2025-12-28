@@ -1,13 +1,13 @@
-package com.example.spring_integration;
+package com.spring.integration.kafka;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpringIntegrationApplication {
+public class SpringIntegrationKafkaApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringIntegrationApplication.class, args);
+		SpringApplication.run(SpringIntegrationKafkaApplication.class, args);
 	}
 
 }
