@@ -18,15 +18,42 @@ import org.springframework.messaging.MessageChannel;
 @FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
 public class SpringIntegrationKafkaFlow {
 
+//    @Bean
+//    public IntegrationFlow kafkaInboundFlow(ConsumerFactory<String, String> kafkaConsumerFactory) {
+//        return IntegrationFlow
+//                .from(Kafka.messageDrivenChannelAdapter(
+//                        kafkaConsumerFactory,
+//                        KafkaMessageDrivenChannelAdapter.ListenerMode.record,
+//                        "test-topic"
+//                ))
+//                .channel("kafkaInputChannel")
+//                .get();
+//    }
+//
+//    @Bean
+//    public QueueChannel kafkaInputChannel() {
+//        return new QueueChannel();
+//    }
+//
+//    @Bean
+//    public IntegrationFlow startKafkaInBound() {
+//        return IntegrationFlow
+//                .from(kafkaInputChannel())
+//                .handle(message -> {
+//                    System.out.println("Received message from Kafka: " + message.getPayload());
+//                })
+//                .get();
+//    }
+
     @Bean
-    public IntegrationFlow kafkaInboundFlow(ConsumerFactory<String, String> kafkaConsumerFactory) {
+    public IntegrationFlow kafkaInboundFlow(ConsumerFactory<String, String> consumerFactory) {
         return IntegrationFlow
                 .from(Kafka.messageDrivenChannelAdapter(
-                        kafkaConsumerFactory,
+                        consumerFactory,
                         KafkaMessageDrivenChannelAdapter.ListenerMode.record,
                         "test-topic"
                 ))
-                .channel("kafkaInputChannel")
+                .channel(kafkaInputChannel())
                 .get();
     }
 
@@ -35,14 +62,5 @@ public class SpringIntegrationKafkaFlow {
         return new QueueChannel();
     }
 
-    @Bean
-    public IntegrationFlow startKafkaInBound() {
-        return IntegrationFlow
-                .from(kafkaInputChannel())
-                .handle(message -> {
-                    System.out.println("Received message from Kafka: " + message.getPayload());
-                })
-                .get();
-    }
 
 }
