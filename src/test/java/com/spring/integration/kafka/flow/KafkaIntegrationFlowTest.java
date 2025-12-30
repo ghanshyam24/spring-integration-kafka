@@ -46,5 +46,4 @@ class KafkaIntegrationFlowTest {
         assertNotNull(received, "Message never arrived");
         assertEquals("hello", received.getPayload());
     }
-
 }
