@@ -11,6 +11,7 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.kafka.dsl.Kafka;
 import org.springframework.integration.kafka.inbound.KafkaMessageDrivenChannelAdapter;
 import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 
 @Configuration
 @RequiredArgsConstructor
@@ -39,4 +40,19 @@ public class SpringIntegrationKafkaFlow {
     public QueueChannel kafkaInputChannel() {
         return new QueueChannel();
     }
+
+
+    @Bean
+    public IntegrationFlow moveDataFlow(ConsumerFactory<String, String> consumerFactory,
+                                        KafkaTemplate<String, String> kafkaTemplate) {
+        return IntegrationFlow
+                .from(kafkaInputChannel())
+                .handle(Kafka.outboundChannelAdapter(kafkaTemplate)
+                        .topic(kafkaProperties.getAckTopicName()))
+                .get();
+    }
+
+
+
+
 }

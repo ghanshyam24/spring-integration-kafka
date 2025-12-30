@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 public class KafkaServiceProperties {
     private String topicName;
+    private String ackTopicName;
+
     private String groupId;
     private int concurrency;
 }

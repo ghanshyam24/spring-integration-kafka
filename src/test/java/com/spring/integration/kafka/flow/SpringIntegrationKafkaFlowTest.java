@@ -1,11 +1,13 @@
 package com.spring.integration.kafka.flow;
 
 import com.spring.integration.kafka.properties.KafkaServiceProperties;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.integration.channel.QueueChannel;
-import org.springframework.messaging.Message;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -14,13 +16,17 @@ import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+
+import java.time.Duration;
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @Testcontainers
 @ActiveProfiles("test")
-class KafkaIntegrationFlowTest {
+class SpringIntegrationKafkaFlowTest {
 
     @Container
     static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.5.0"));
@@ -34,16 +40,27 @@ class KafkaIntegrationFlowTest {
     KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
-    QueueChannel kafkaInputChannel;
-
-    @Autowired
     private KafkaServiceProperties kafkaServiceProperties;
 
+    @Autowired
+    private ConsumerFactory<String, String> consumerFactory;
+
+
     @Test
-    void shouldConsumeMessageFromKafka() {
-        kafkaTemplate.send(kafkaServiceProperties.getTopicName(), "hello");
-        Message<?> received = kafkaInputChannel.receive(10000);
-        assertNotNull(received, "Message never arrived");
-        assertEquals("hello", received.getPayload());
+    void shouldMoveDataToAckTopic() {
+        String payload = "Integration Test Data";
+        String targetTopic = kafkaServiceProperties.getAckTopicName();
+
+        Consumer<String, String> testConsumer = consumerFactory.createConsumer(kafkaServiceProperties.getGroupId(), "test-client");
+        testConsumer.subscribe(Collections.singletonList(targetTopic));
+
+        kafkaTemplate.send(kafkaServiceProperties.getTopicName(), payload);
+
+        ConsumerRecord<String, String> received = KafkaTestUtils.getSingleRecord(testConsumer, targetTopic, Duration.ofSeconds(10));
+
+        assertNotNull(received);
+        assertEquals(payload, received.value());
+
+        testConsumer.close();
     }
 }
