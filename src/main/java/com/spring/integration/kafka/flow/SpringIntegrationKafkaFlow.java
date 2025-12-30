@@ -15,7 +15,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 @Configuration
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class SpringIntegrationKafkaFlow {
 
     KafkaServiceProperties kafkaProperties;
@@ -51,8 +51,5 @@ public class SpringIntegrationKafkaFlow {
                         .topic(kafkaProperties.getAckTopicName()))
                 .get();
     }
-
-
-
 
 }
